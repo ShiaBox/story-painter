@@ -135,8 +135,8 @@ export const useStore = defineStore('main', {
     },
 
     async tryFetchLog(key: string, password: string) {
-      // https://log-shia.zerda.top/dice
-      const resp = await axios.get('https://log-shia.zerda.top/dice/api/load_data', {
+      // https://log-api-shia.zerda.top/dice
+      const resp = await axios.get('https://log-api-shia.zerda.top/dice/api/load_data', {
         params: { key, password }
       })
       return resp.data
