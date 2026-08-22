@@ -1,33 +1,61 @@
 <template>
-  <n-layout>
-    <n-layout-header class="bg-slate-100 dark:bg-inherit">
-      <n-flex class="py-3 text-2xl" size="large" align="center" justify="center" wrap>
-        <n-flex align="center" justify="center">
-          <strong>海豹TRPG跑团Log着色器 - 骰子之间DiceZone</strong>
-          <n-tag type="success" size="small" :bordered="false">v2.5.4</n-tag>
-        </n-flex>
-        <n-flex align="center" justify="center">
-          <n-icon>
-            <a href="https://github.com/sealdice/story-painter" target="_blank">
-              <logo-github />
-            </a>
-          </n-icon>
-          <n-button type="primary" @click="backV1">海豹官网</n-button>
-        </n-flex>
-      </n-flex>
-    </n-layout-header>
-    <n-layout-content class="bg-slate-100 dark:bg-inherit">
-      <div style="width: 1000px; margin: 0 auto; max-width: 100%; padding-bottom: 3rem">
-        <n-text type="info" italic class="block text-center my-1">希亚的日志站反馈群1064492379 有问题请及时反馈</n-text>
+  <div class="min-h-screen bg-background">
+    <header class="sticky top-0 z-40 h-14 border-b bg-background">
+      <div class="mx-auto flex h-full max-w-[1100px] items-center justify-between px-4">
+        <div class="flex items-center gap-3">
+          <span class="text-xl leading-none">🎲</span>
+          <h1 class="text-lg font-bold tracking-tight text-brand-600 dark:text-brand-400">Dice-Next 日志渲染器</h1>
+          <n-tag size="small" :bordered="false" type="primary">v2.5.4</n-tag>
+        </div>
+        <div class="flex items-center gap-2">
+          <n-button quaternary size="small" @click="toggleDark()">
+            {{ isDark ? '☀️ 亮色' : '🌙 深色' }}
+          </n-button>
+          <n-button quaternary size="small" tag="a" href="https://github.com/DiceZone/Dice-Next-log-renderer"
+            target="_blank">
+            GitHub
+          </n-button>
+        </div>
+      </div>
+    </header>
+
+    <main class="mx-auto max-w-[1100px] px-4 py-6 space-y-6 pb-12">
+      <div class="flex flex-wrap items-center justify-between gap-3 animate-fade-in">
+        <div>
+          <h2 class="text-2xl font-bold tracking-tight">跑团日志着色</h2>
+          <p class="text-sm text-muted-foreground">粘贴或导入跑团日志，自动识别角色并染色，支持多种格式预览与导出</p>
+        </div>
+      </div>
+
+      <section class="dn-card animate-fade-in">
+        <div class="mb-4">
+          <h3 class="dn-card-title">渲染选项</h3>
+          <p class="dn-card-desc">控制预览与导出内容的显示细节</p>
+        </div>
         <option-view></option-view>
-        <n-spin :show="loading">
-          <template #description>
-            正在试图加载远程记录……
-          </template>
-          <div class="pc-list">
-            <div v-for="(i, index) in store.pcList">
-              <div style="display: flex; align-items: center; width: 26rem;">
-                <n-button type="error" size="small" secondary style="padding: 0 1rem " @click="deletePc(index, i)"
+      </section>
+
+      <n-spin :show="loading">
+        <template #description>
+          正在试图加载远程记录……
+        </template>
+        <div class="space-y-6">
+          <section class="dn-card animate-fade-in">
+            <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 class="dn-card-title">角色列表</h3>
+                <p class="dn-card-desc">修改角色名称、类型与颜色，颜色将同步到预览与导出</p>
+              </div>
+              <n-tooltip placement="top-end">
+                <template #trigger>
+                  <n-button size="small" @click="refreshColors">刷新色板</n-button>
+                </template>
+                重新随机生成颜色选择中的预置颜色
+              </n-tooltip>
+            </div>
+            <div class="pc-list">
+              <div v-for="(i, index) in store.pcList" class="pc-row">
+                <n-button type="error" size="small" secondary @click="deletePc(index, i)"
                   :disabled="isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG">
                   <template #icon>
                     <n-icon>
@@ -38,76 +66,74 @@
                 </n-button>
 
                 <n-input :disabled="isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG"
-                  v-model:value="i.name" class="w-50 m-2" :prefix-icon="User" @focus="nameFocus(i)"
+                  v-model:value="i.name" class="pc-name" :prefix-icon="User" @focus="nameFocus(i)"
                   @change="nameChanged(i)" />
 
-                <n-input :disabled="true" v-model:value="i.IMUserId" style="width: 24rem" />
+                <n-input :disabled="true" v-model:value="i.IMUserId" class="pc-uid" />
 
-                <n-select v-model:value="i.role" class="m-2 w-60" style="width: 24rem"
+                <n-select v-model:value="i.role" class="pc-role"
                   :options="[{ value: '主持人', label: '主持人' }, { value: '角色', label: '角色' }, { value: '骰子', label: '骰子' }, { value: '隐藏', label: '隐藏' }]" />
 
-                <n-color-picker v-model:value="i.color" :show-alpha="false" show-preview :swatches="colors"
-                  :on-update:value="(v) => colorChanged(v, i)" />
+                <n-color-picker class="pc-color" v-model:value="i.color" :show-alpha="false" show-preview
+                  :swatches="colors" :on-update:value="(v) => colorChanged(v, i)" />
               </div>
             </div>
-          </div>
+          </section>
 
-          <n-flex size="small" justify="center" align="center" class="my-4">
-            <n-flex size="small" justify="center" align="center" class="mr-2">
-              <n-button secondary type="primary" @click="exportRecordRaw">下载原始文件</n-button>
+          <section class="dn-card animate-fade-in">
+            <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
+              <div>
+                <h3 class="dn-card-title">日志编辑</h3>
+                <p class="dn-card-desc">在编辑器中粘贴日志文本，自动解析并染色；勾选下方选项切换预览</p>
+              </div>
+              <n-flex size="small" wrap class="items-center">
+                <n-checkbox label="预览" v-model:checked="isShowPreview" @click="previewClick('preview')" />
+                <n-checkbox label="论坛代码" v-model:checked="isShowPreviewBBS" @click="previewClick('bbs')" />
+                <n-checkbox label="论坛代码(内容多行)" v-model:checked="isShowPreviewBBSPineapple"
+                  @click="previewClick('bbspineapple')" />
+                <n-checkbox label="回声工坊" v-model:checked="isShowPreviewTRG" @click="previewClick('trg')" />
+              </n-flex>
+            </div>
+
+            <code-mirror v-show="!(isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG)"
+              ref="editor" @change="onChange">
+              <div class="z-50 absolute right-2 flex flex-col items-center gap-1">
+                <n-button size="small" secondary type="primary" @click="clearText" id="btnCopyPreviewBBS" class="w-full">
+                  清空内容
+                </n-button>
+                <n-button size="small" secondary type="primary" @click="doFlush" class="w-full">强制刷新</n-button>
+                <n-checkbox label="编辑器染色" v-model:checked="store.doEditorHighlight" :border="false" class="w-full"
+                  @click.native="doEditorHighlightClick($event)" />
+              </div>
+            </code-mirror>
+
+            <n-message-provider>
+              <preview-main :is-show="isShowPreview" :preview-items="previewItems"></preview-main>
+              <preview-bbs :is-show="isShowPreviewBBS" :preview-items="previewItems"></preview-bbs>
+              <preview-bbs-pineapple :is-show="isShowPreviewBBSPineapple"
+                :preview-items="previewItems"></preview-bbs-pineapple>
+              <preview-trg :is-show="isShowPreviewTRG" :preview-items="previewItems"></preview-trg>
+            </n-message-provider>
+          </section>
+
+          <section class="dn-card animate-fade-in">
+            <div class="mb-4">
+              <h3 class="dn-card-title">导出</h3>
+              <p class="dn-card-desc">将日志导出为原始文本或带格式的文档</p>
+            </div>
+            <n-flex size="small" wrap>
+              <n-button type="primary" @click="exportRecordRaw">下载原始文件</n-button>
               <!-- <n-button secondary type="primary" v-show="false" @click="exportRecordQQ">下载QQ风格记录</n-button>-->
               <!-- <n-button secondary type="primary" v-show="false" @click="exportRecordIRC">下载IRC风格记录</n-button>-->
               <n-button secondary type="primary" @click="exportRecordDOC">下载带图doc</n-button>
               <n-button secondary type="primary" @click="exportRecordTalkDOC">下载对话doc</n-button>
               <n-button secondary type="primary" @click="exportRecordDocx">下载docx</n-button>
             </n-flex>
-            <!-- <n-button @click="showPreview">预览</n-button> -->
-            <div>
-              <n-checkbox label="预览" v-model:checked="isShowPreview" :border="true" @click="previewClick('preview')" />
-              <n-checkbox label="论坛代码" v-model:checked="isShowPreviewBBS" :border="true" @click="previewClick('bbs')" />
-              <n-checkbox label="论坛代码(内容多行)" v-model:checked="isShowPreviewBBSPineapple" :border="true"
-                @click="previewClick('bbspineapple')" />
-              <n-checkbox label="回声工坊" v-model:checked="isShowPreviewTRG" :border="true" @click="previewClick('trg')" />
-            </div>
-            <n-divider vertical />
-            <div>
-              <n-tooltip class="box-item" placement="top-start">
-                <template #trigger>
-                  <n-button type="primary" text @click="refreshColors">刷新色板</n-button>
-                </template>
-                重新随机生成上方颜色选择中的预置颜色
-              </n-tooltip>
-            </div>
-          </n-flex>
-
-          <code-mirror v-show="!(isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG)"
-            ref="editor" class="mt-4" @change="onChange">
-            <div class="z-50 absolute right-2 flex flex-col items-center">
-              <div class="">
-                <n-button secondary @click="clearText" id="btnCopyPreviewBBS" type="primary" class="w-full">清空内容
-                </n-button>
-              </div>
-              <div class="mt-1">
-                <n-button secondary @click="doFlush" type="primary" class="w-full">强制刷新</n-button>
-              </div>
-              <div class="mt-1">
-                <n-checkbox label="编辑器染色" v-model:checked="store.doEditorHighlight" :border="false" class="w-full"
-                  @click.native="doEditorHighlightClick($event)" />
-              </div>
-            </div>
-          </code-mirror>
-
-          <n-message-provider>
-            <preview-main :is-show="isShowPreview" :preview-items="previewItems"></preview-main>
-            <preview-bbs :is-show="isShowPreviewBBS" :preview-items="previewItems"></preview-bbs>
-            <preview-bbs-pineapple :is-show="isShowPreviewBBSPineapple"
-              :preview-items="previewItems"></preview-bbs-pineapple>
-            <preview-trg :is-show="isShowPreviewTRG" :preview-items="previewItems"></preview-trg>
-          </n-message-provider>
-        </n-spin>
-      </div>
-    </n-layout-content>
-  </n-layout>
+          </section>
+        </div>
+      </n-spin>
+    </main>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -133,7 +159,7 @@ import { LogItem, CharItem, packNameId } from "./logManager/types";
 import { setCharInfo } from './logManager/importers/_logImpoter'
 import { applyQQImageRKeyReplacement, shouldApplyQQImageRKeyReplacement, msgCommandFormat, msgImageFormat, msgIMUseridFormat, msgOffTopicFormat, msgAtFormat } from "./utils";
 import { NButton, NText, useMessage, useModal, useNotification } from "naive-ui";
-import { User, LogoGithub, Delete as IconDelete } from '@vicons/carbon'
+import { User, Delete as IconDelete } from '@vicons/carbon'
 import { breakpointsTailwind, useBreakpoints, useDark, useToggle } from '@vueuse/core'
 import OptionView from "./components/OptionView.vue";
 import randomColor from "randomcolor";
@@ -181,8 +207,7 @@ const colorChanged = debounce((v: string, i: CharItem) => {
 }, 300)
 
 const backV1 = () => {
-  // location.href = location.origin + '/v1/' + location.search + location.hash;
-  location.href = 'https://dice.weizaima.com';
+  // 预留：Dice-Next 官网跳转
 }
 
 // 清空文本
@@ -980,8 +1005,38 @@ const code = ref("")
 
 .pc-list {
   display: flex;
-  align-items: center;
   flex-direction: column;
+}
+
+.pc-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.375rem 0;
+  border-bottom: 1px solid hsl(var(--border) / 0.6);
+}
+
+.pc-row:last-child {
+  border-bottom: none;
+}
+
+.pc-name {
+  width: 10rem;
+}
+
+.pc-uid {
+  width: 9rem;
+  flex: 1;
+  min-width: 8rem;
+}
+
+.pc-role {
+  width: 7rem;
+}
+
+.pc-color {
+  width: 5rem;
 }
 
 #app {
