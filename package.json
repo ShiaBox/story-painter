@@ -40,9 +40,6 @@
     "vue-color-kit": "^1.0.6",
     "vue3-virtual-scroll-list": "^0.2.1"
   },
-  "pnpm": {
-    "onlyBuiltDependencies": ["@parcel/watcher", "core-js", "esbuild", "vue-demi"]
-  },
   "devDependencies": {
     "@types/file-saver": "^2.0.7",
     "@types/lodash-es": "^4.17.12",
