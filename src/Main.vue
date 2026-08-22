@@ -3,16 +3,38 @@
     <header class="sticky top-0 z-40 h-14 border-b bg-background">
       <div class="mx-auto flex h-full max-w-[1100px] items-center justify-between px-4">
         <div class="flex items-center gap-3">
-          <span class="text-xl leading-none">🎲</span>
+          <img :src="logoUrl" alt="Dice!Next" class="h-7 w-7 shrink-0 object-contain" />
           <h1 class="text-lg font-bold tracking-tight text-brand-600 dark:text-brand-400">Dice-Next 日志渲染器</h1>
           <n-tag size="small" :bordered="false" type="primary">v2.5.4</n-tag>
         </div>
         <div class="flex items-center gap-2">
-          <n-button quaternary size="small" @click="toggleDark()">
-            {{ isDark ? '☀️ 亮色' : '🌙 深色' }}
+          <n-button quaternary size="small" @click="toggleDark()" :title="isDark ? '切换至亮色模式' : '切换至深色模式'"
+            :aria-label="isDark ? '切换至亮色模式' : '切换至深色模式'">
+            <template #icon>
+              <n-icon>
+                <svg v-if="isDark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="4" />
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+                </svg>
+                <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                </svg>
+              </n-icon>
+            </template>
+            <span class="hidden sm:inline">{{ isDark ? '亮色' : '深色' }}</span>
           </n-button>
           <n-button quaternary size="small" tag="a" href="https://github.com/DiceZone/Dice-Next-log-renderer"
             target="_blank">
+            <template #icon>
+              <n-icon>
+                <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path fill="currentColor"
+                    d="M511.6 76.3C264.3 76.2 64 276.4 64 523.5 64 718.9 189.3 885 363.8 946c23.5 5.9 19.9-10.8 19.9-22.2v-77.5c-135.7 15.9-141.2-73.9-150.3-88.9C215 726 171.5 718 184.5 703c30.9-15.9 62.4 4 98.9 57.9 26.4 39.1 77.9 32.5 104 26 5.7-23.5 17.9-44.5 34.7-60.8-140.6-25.2-199.2-111-199.2-213 0-49.5 16.3-95 48.3-131.7-20.4-60.5 1.9-112.3 4.9-120 58.1-5.2 118.5 41.6 123.2 45.3 33-8.9 70.7-13.6 112.9-13.6 42.4 0 80.2 4.9 113.5 13.9 11.3-8.6 67.3-48.8 121.3-43.9 2.9 7.7 24.7 58.3 5.5 118 32.4 36.8 48.9 82.7 48.9 132.3 0 102.2-59 188.1-200 212.9 23.5 23.2 38.1 55.4 38.1 91v112.5c0.8 9 0 17.9 15 17.9 177.1-59.7 304.6-227 304.6-424.1 0-247.2-200.4-447.3-447.5-447.3z" />
+                </svg>
+              </n-icon>
+            </template>
             GitHub
           </n-button>
         </div>
@@ -24,15 +46,29 @@
         <div>
           <h2 class="text-2xl font-bold tracking-tight">跑团日志着色</h2>
           <p class="text-sm text-muted-foreground">粘贴或导入跑团日志，自动识别角色并染色，支持多种格式预览与导出</p>
+          <p class="mt-2 text-sm text-brand-600 dark:text-brand-400">希亚的日志站反馈群 1064492379，有问题请及时反馈</p>
         </div>
       </div>
 
       <section class="dn-card animate-fade-in">
-        <div class="mb-4">
-          <h3 class="dn-card-title">渲染选项</h3>
-          <p class="dn-card-desc">控制预览与导出内容的显示细节</p>
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h3 class="dn-card-title">渲染选项</h3>
+            <p class="dn-card-desc">控制预览与导出内容的显示细节</p>
+          </div>
+          <n-button quaternary size="small" @click="renderOptionsExpanded = !renderOptionsExpanded"
+            :aria-expanded="renderOptionsExpanded">
+            <template #icon>
+              <n-icon><chevron-up v-if="renderOptionsExpanded" /><chevron-down v-else /></n-icon>
+            </template>
+            {{ renderOptionsExpanded ? '收起' : '展开' }}
+          </n-button>
         </div>
-        <option-view></option-view>
+        <n-collapse-transition :show="renderOptionsExpanded">
+          <div class="pt-4">
+            <option-view></option-view>
+          </div>
+        </n-collapse-transition>
       </section>
 
       <n-spin :show="loading">
@@ -41,43 +77,65 @@
         </template>
         <div class="space-y-6">
           <section class="dn-card animate-fade-in">
-            <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 class="dn-card-title">角色列表</h3>
+                <h3 class="dn-card-title">
+                  角色列表
+                  <n-tag size="small" :bordered="false">{{ store.pcList.length }}</n-tag>
+                </h3>
                 <p class="dn-card-desc">修改角色名称、类型与颜色，颜色将同步到预览与导出</p>
               </div>
-              <n-tooltip placement="top-end">
-                <template #trigger>
-                  <n-button size="small" @click="refreshColors">刷新色板</n-button>
-                </template>
-                重新随机生成颜色选择中的预置颜色
-              </n-tooltip>
-            </div>
-            <div class="pc-list">
-              <div v-for="(i, index) in store.pcList" class="pc-row">
-                <n-button type="error" size="small" secondary @click="deletePc(index, i)"
-                  :disabled="isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG">
-                  <template #icon>
-                    <n-icon>
-                      <icon-delete></icon-delete>
-                    </n-icon>
+              <div class="flex items-center gap-2">
+                <n-tooltip placement="top-end">
+                  <template #trigger>
+                    <n-button size="small" @click="refreshColors">刷新色板</n-button>
                   </template>
-                  <span v-if="notMobile">删除</span>
+                  重新随机生成颜色选择中的预置颜色
+                </n-tooltip>
+                <n-button quaternary size="small" @click="charactersExpanded = !charactersExpanded"
+                  :aria-expanded="charactersExpanded">
+                  <template #icon>
+                    <n-icon><chevron-up v-if="charactersExpanded" /><chevron-down v-else /></n-icon>
+                  </template>
+                  {{ charactersExpanded ? '收起' : '展开' }}
                 </n-button>
-
-                <n-input :disabled="isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG"
-                  v-model:value="i.name" class="pc-name" :prefix-icon="User" @focus="nameFocus(i)"
-                  @change="nameChanged(i)" />
-
-                <n-input :disabled="true" v-model:value="i.IMUserId" class="pc-uid" />
-
-                <n-select v-model:value="i.role" class="pc-role"
-                  :options="[{ value: '主持人', label: '主持人' }, { value: '角色', label: '角色' }, { value: '骰子', label: '骰子' }, { value: '隐藏', label: '隐藏' }]" />
-
-                <n-color-picker class="pc-color" v-model:value="i.color" :show-alpha="false" show-preview
-                  :swatches="colors" :on-update:value="(v) => colorChanged(v, i)" />
               </div>
             </div>
+            <n-collapse-transition :show="charactersExpanded">
+              <div class="pc-list pt-4">
+                <div v-for="(i, index) in store.pcList" :key="i.IMUserId + '-' + index" class="pc-card">
+                  <label class="pc-field">
+                    <span class="pc-field-label">姓名</span>
+                    <n-input :disabled="isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG"
+                      v-model:value="i.name" :prefix-icon="User" @focus="nameFocus(i)" @change="nameChanged(i)" />
+                  </label>
+
+                  <label class="pc-field">
+                    <span class="pc-field-label">平台账号</span>
+                    <n-input :disabled="true" v-model:value="i.IMUserId" />
+                  </label>
+
+                  <label class="pc-field">
+                    <span class="pc-field-label">类型</span>
+                    <n-select v-model:value="i.role"
+                      :options="[{ value: '主持人', label: '主持人' }, { value: '角色', label: '角色' }, { value: '骰子', label: '骰子' }, { value: '隐藏', label: '隐藏' }]" />
+                  </label>
+
+                  <label class="pc-field">
+                    <span class="pc-field-label">颜色</span>
+                    <n-color-picker v-model:value="i.color" :show-alpha="false" show-preview
+                      :swatches="colors" :on-update:value="(v: string) => colorChanged(v, i)" />
+                  </label>
+
+                  <n-button class="pc-delete" type="error" size="small" secondary @click="deletePc(index, i)"
+                    :disabled="isShowPreview || isShowPreviewBBS || isShowPreviewBBSPineapple || isShowPreviewTRG">
+                    <template #icon><n-icon><icon-delete /></n-icon></template>
+                    删除
+                  </n-button>
+                </div>
+                <n-empty v-if="store.pcList.length === 0" description="导入或粘贴日志后，将在这里显示识别到的角色" />
+              </div>
+            </n-collapse-transition>
           </section>
 
           <section class="dn-card animate-fade-in">
@@ -159,8 +217,8 @@ import { LogItem, CharItem, packNameId } from "./logManager/types";
 import { setCharInfo } from './logManager/importers/_logImpoter'
 import { applyQQImageRKeyReplacement, shouldApplyQQImageRKeyReplacement, msgCommandFormat, msgImageFormat, msgIMUseridFormat, msgOffTopicFormat, msgAtFormat } from "./utils";
 import { NButton, NText, useMessage, useModal, useNotification } from "naive-ui";
-import { User, Delete as IconDelete } from '@vicons/carbon'
-import { breakpointsTailwind, useBreakpoints, useDark, useToggle } from '@vueuse/core'
+import { User, Delete as IconDelete, ChevronDown, ChevronUp } from '@vicons/carbon'
+import { useDark, useToggle } from '@vueuse/core'
 import OptionView from "./components/OptionView.vue";
 import randomColor from "randomcolor";
 
@@ -169,9 +227,8 @@ import { asyncBufferFrom } from 'hyperparam'
 import { compressors } from 'hyparquet-compressors'
 import { decompress as zstdDecompress } from 'fzstd'   // DiceNext 依赖
 
+const logoUrl = `${import.meta.env.BASE_URL}favicon.svg`
 
-const breakpoints = useBreakpoints(breakpointsTailwind)
-const notMobile = breakpoints.greater('sm')
 
 const isDark = useDark()
 const toggleDark = useToggle(isDark)
@@ -193,6 +250,8 @@ const isShowPreview = ref(false)
 const isShowPreviewBBS = ref(false)
 const isShowPreviewBBSPineapple = ref(false)
 const isShowPreviewTRG = ref(false)
+const renderOptionsExpanded = ref(false)
+const charactersExpanded = ref(false)
 
 const colors = ref<string[]>([])
 const refreshColors = () => {
@@ -1004,39 +1063,66 @@ const code = ref("")
 }
 
 .pc-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  gap: 0.75rem;
 }
 
-.pc-row {
-  display: flex;
+.pc-card {
+  display: grid;
+  grid-template-columns: minmax(11rem, 1.25fr) minmax(10rem, 1fr) minmax(8rem, 0.72fr) minmax(9rem, 0.8fr) auto;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  border: 1px solid hsl(var(--border));
+  border-radius: var(--radius);
+  background: hsl(var(--muted) / 0.28);
+}
+
+.pc-field {
+  display: flex;
+  min-width: 0;
+  align-items: center;
   gap: 0.5rem;
-  padding: 0.375rem 0;
-  border-bottom: 1px solid hsl(var(--border) / 0.6);
 }
 
-.pc-row:last-child {
-  border-bottom: none;
+.pc-field-label {
+  flex: none;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.pc-name {
-  width: 10rem;
-}
-
-.pc-uid {
-  width: 9rem;
+.pc-field :deep(.n-input),
+.pc-field :deep(.n-base-selection),
+.pc-field :deep(.n-color-picker) {
+  min-width: 0;
   flex: 1;
-  min-width: 8rem;
 }
 
-.pc-role {
-  width: 7rem;
+.pc-delete {
+  justify-self: end;
 }
 
-.pc-color {
-  width: 5rem;
+@media (max-width: 900px) {
+  .pc-card {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .pc-delete {
+    grid-column: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .pc-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pc-delete {
+    grid-column: 1;
+    width: 100%;
+  }
 }
 
 #app {

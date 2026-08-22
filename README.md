@@ -28,10 +28,3 @@ pnpm build  # 构建（含类型检查）
 ## 致谢
 
 * [sealdice/story-painter](https://github.com/sealdice/story-painter) 及其作者 fy 与所有贡献者
-* [DiceZone/story-painter](https://github.com/DiceZone/story-painter) 分支的增强（DiceNext zstd 日志、Parquet 支持等）
-
-## 更新日志
-
-### Dice-Next 版（基于上游 2.5.4）
-
-* 品牌与界面全面切换为 Dice-Next 风格（对齐 Dice-Next-WebUI 设计系统）

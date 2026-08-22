@@ -13,3 +13,10 @@ package-lock.json
 /.vscode
 /.idea
 story-painter-dz.zip
+
+# vite temp
+vite.config.ts.timestamp-*.mjs
+
+# local env (may contain secrets)
+.env.local
+.env.*.local
