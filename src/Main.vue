@@ -4,8 +4,8 @@
       <div class="mx-auto flex h-full max-w-[1100px] items-center justify-between px-4">
         <div class="flex items-center gap-3">
           <img :src="logoUrl" alt="Dice!Next" class="h-7 w-7 shrink-0 object-contain" />
-          <h1 class="text-lg font-bold tracking-tight text-brand-600 dark:text-brand-400">Dice-Next 日志渲染器</h1>
-          <n-tag size="small" :bordered="false" type="primary">v2.5.4</n-tag>
+          <h1 class="text-lg font-bold tracking-tight text-brand-600 dark:text-brand-400">Dice!Next</h1>
+          <n-tag size="small" :bordered="false" type="primary">v2.5.5-dz</n-tag>
         </div>
         <div class="flex items-center gap-2">
           <n-button quaternary size="small" @click="toggleDark()" :title="isDark ? '切换至亮色模式' : '切换至深色模式'"
@@ -25,8 +25,8 @@
             </template>
             <span class="hidden sm:inline">{{ isDark ? '亮色' : '深色' }}</span>
           </n-button>
-          <n-button quaternary size="small" tag="a" href="https://github.com/DiceZone/Dice-Next-log-renderer"
-            target="_blank">
+          <n-button quaternary size="small" square tag="a" href="https://github.com/DiceZone/Dice-Next-log-renderer"
+            target="_blank" :title="'GitHub'" :aria-label="'GitHub'">
             <template #icon>
               <n-icon>
                 <svg viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -35,7 +35,13 @@
                 </svg>
               </n-icon>
             </template>
-            GitHub
+          </n-button>
+          <n-button quaternary size="small" tag="a" href="https://docs.dice.zone/" target="_blank"
+            :title="'Dice!Next 官网'" :aria-label="'Dice!Next 官网'">
+            <template #icon>
+              <n-icon><launch /></n-icon>
+            </template>
+            官网
           </n-button>
         </div>
       </div>
@@ -56,8 +62,8 @@
             <h3 class="dn-card-title">渲染选项</h3>
             <p class="dn-card-desc">控制预览与导出内容的显示细节</p>
           </div>
-          <n-button quaternary size="small" @click="renderOptionsExpanded = !renderOptionsExpanded"
-            :aria-expanded="renderOptionsExpanded">
+          <n-button quaternary size="small" class="self-start"
+            @click="renderOptionsExpanded = !renderOptionsExpanded" :aria-expanded="renderOptionsExpanded">
             <template #icon>
               <n-icon><chevron-up v-if="renderOptionsExpanded" /><chevron-down v-else /></n-icon>
             </template>
@@ -85,15 +91,15 @@
                 </h3>
                 <p class="dn-card-desc">修改角色名称、类型与颜色，颜色将同步到预览与导出</p>
               </div>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 ml-auto self-start">
                 <n-tooltip placement="top-end">
                   <template #trigger>
                     <n-button size="small" @click="refreshColors">刷新色板</n-button>
                   </template>
                   重新随机生成颜色选择中的预置颜色
                 </n-tooltip>
-                <n-button quaternary size="small" @click="charactersExpanded = !charactersExpanded"
-                  :aria-expanded="charactersExpanded">
+                <n-button quaternary size="small" class="self-start"
+                  @click="charactersExpanded = !charactersExpanded" :aria-expanded="charactersExpanded">
                   <template #icon>
                     <n-icon><chevron-up v-if="charactersExpanded" /><chevron-down v-else /></n-icon>
                   </template>
@@ -217,7 +223,7 @@ import { LogItem, CharItem, packNameId } from "./logManager/types";
 import { setCharInfo } from './logManager/importers/_logImpoter'
 import { applyQQImageRKeyReplacement, shouldApplyQQImageRKeyReplacement, msgCommandFormat, msgImageFormat, msgIMUseridFormat, msgOffTopicFormat, msgAtFormat } from "./utils";
 import { NButton, NText, useMessage, useModal, useNotification } from "naive-ui";
-import { User, Delete as IconDelete, ChevronDown, ChevronUp } from '@vicons/carbon'
+import { User, Delete as IconDelete, ChevronDown, ChevronUp, Launch } from '@vicons/carbon'
 import { useDark, useToggle } from '@vueuse/core'
 import OptionView from "./components/OptionView.vue";
 import randomColor from "randomcolor";

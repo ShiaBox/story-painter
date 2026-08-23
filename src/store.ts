@@ -6,8 +6,8 @@ import { CharItem, LogItem, packNameId } from './logManager/types';
 import { random } from 'lodash-es';
 import * as twColors from 'tailwindcss/colors';
 
-const diceAPIBase = import.meta.env.VITE_LOG_API_BASE || 'https://log-api.dice.zone/api/dice';
-const rkeyAPIBase = import.meta.env.VITE_RKEY_API_BASE || 'https://dice-api.weizaima.com/api/v1/rkey';
+const diceAPIBase = import.meta.env.LOG_API_BASE || 'https://log-api.dice.zone/api/dice';
+const rkeyAPIBase = import.meta.env.RKEY_API_BASE || 'https://dice-api.weizaima.com/api/v1/rkey';
 
 export const useStore = defineStore('main', {
   state: () => {

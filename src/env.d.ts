@@ -2,9 +2,9 @@
 
 interface ImportMetaEnv {
   /** 日志数据 API 地址（store.ts 中 diceAPIBase） */
-  readonly VITE_LOG_API_BASE?: string
+  readonly LOG_API_BASE?: string
   /** RKey 获取接口地址（store.ts 中 tryFetchRKey） */
-  readonly VITE_RKEY_API_BASE?: string
+  readonly RKEY_API_BASE?: string
 }
 
 interface ImportMeta {
